@@ -1,4 +1,4 @@
-import std/[os, json, times, strutils, strformat]
+import std/[os, json, times, strutils, strformat, osproc]
 import system/io
 
 
@@ -8,8 +8,9 @@ proc cpuSpeed(): string =
   result = fmt"{clock}MHz"
 
 proc cpuTemp(): string =
-  var line: string = readFile("/sys/class/hwmon/hwmon0/temp1_input")
-  let temp = parseInt(line.strip()) / 1000
+  let o = execProcess("sensors -j")
+  let j = parseJson(o)
+  let temp = j["coretemp-isa-0000"]["Package id 0"]["temp1_input"].getFloat()
   result = fmt"{temp}°C"
 
 
