@@ -1,29 +1,36 @@
 import std/[os, json, times, strutils, strformat, osproc, parseopt]
 import system/io
 
-
-proc cpuSpeed(): string =
+proc cpuSpeed(): int =
   var line: string = readFile("/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq")
-  let clock = toInt(parseInt(line.strip()) / 1000)
-  result = fmt"{clock}MHz"
+  result = toInt(parseInt(line.strip()) / 1000)
 
-proc cpuTemp(): string =
+proc cpuTemp(): float =
   let o = execProcess("sensors -j")
   let j = parseJson(o)
-  let temp = j["coretemp-isa-0000"]["Package id 0"]["temp1_input"].getFloat()
-  result = fmt"{temp}°C"
+  result = j["coretemp-isa-0000"]["Package id 0"]["temp1_input"].getFloat()
 
 proc runJson(): bool =
+    let speed = cpuSpeed()
+    var speedcolor = "#FFFFFF"
+    let temp = cpuTemp()
+    var tempcolor = "#FFFFFF"
+    let time = now().format("dd-MM-yyyy :: HH:mm:ss")
+    var timecolor = "#FFFFFF"
+    if temp >= 60:
+      tempcolor = "#A73333"
+    if speed <= 2000:
+      speedcolor = "#959595"
     echo ","
-    echo %*[{"full_text": cpuSpeed()},
-            {"full_text": cpuTemp()},
-            {"full_text": now().format("dd-MM-yyyy :: HH:mm:ss")}]
+    echo %*[{"full_text": fmt"{speed}MHz", "color": speedcolor},
+            {"full_text": fmt"{temp}°C", "color": tempcolor},
+            {"full_text": time, "color": timecolor}]
 
 proc runTty(): bool =
   let speed = cpuSpeed()
   let temp = cpuTemp()
   let time = now().format("dd-MM-yyyy :: HH:mm:ss")
-  echo fmt"{speed} | {temp} | {time}"
+  echo fmt"{speed}MHz | {temp}°C | {time}"
 
 proc runHelp(): bool =
   echo "--help,-h\n--json,-j output JSON for i3\ndefault is tty"
