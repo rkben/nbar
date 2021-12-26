@@ -1,13 +1,13 @@
-import std/[os, json, times, strutils, strformat, osproc, parseopt]
+import std/[os, json, times, strutils, strformat, osproc, parseopt, math]
 import system/io
 
 const delay = 5
 var lastTime: float = 0.0
 var lastTemp: float = 0.0
-var lastSpeed: int = 0
-proc cpuSpeed(): int =
+var lastSpeed: float = 0
+proc cpuSpeed(): float =
   var line: string = readFile("/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq")
-  result = toInt(parseInt(line.strip()) / 1000)
+  result = round(parseInt(line.strip()) / 1000000, 2)
   lastSpeed = result
 
 proc cpuTemp(): float =
@@ -33,7 +33,7 @@ proc runJson(): bool =
   if speed <= 2000:
       speedcolor = "#959595"
   echo ","
-  echo %*[{"full_text": fmt"{speed}MHz", "color": speedcolor},
+  echo %*[{"full_text": fmt"{speed}GHz", "color": speedcolor},
           {"full_text": fmt"{temp}°C", "color": tempcolor},
           {"full_text": time, "color": timecolor}]
 
@@ -46,7 +46,7 @@ proc runTty(): bool =
     speed = cpuSpeed()
     temp = cpuTemp()
     lastTime = epochTime()
-  echo fmt"{speed}MHz | {temp}°C | {time}"
+  echo fmt"{speed}GHz | {temp}°C | {time}"
 
 proc runHelp(): bool =
   echo "--help,-h\n--json,-j output JSON for i3\ndefault is tty"
