@@ -30,7 +30,7 @@ proc runJson(): bool =
   var timecolor = "#FFFFFF"
   if temp >= 60:
       tempcolor = "#A73333"
-  if speed <= 2000:
+  if speed <= 2:
       speedcolor = "#959595"
   echo ","
   echo %*[{"full_text": fmt"{speed}GHz", "color": speedcolor},
