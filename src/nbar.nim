@@ -42,7 +42,6 @@ proc runTty(): bool =
   var speed = lastSpeed
   var temp = lastTemp
   var time = now().format("dd-MM-yyyy :: HH:mm:ss")
-  echo epochTime()
   if (epochTime() - lastTime) >= delay:
     speed = cpuSpeed()
     temp = cpuTemp()
