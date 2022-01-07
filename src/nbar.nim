@@ -1,7 +1,10 @@
 import std/[os, json, times, strutils, strformat, osproc, parseopt, math]
 import system/io
 
-const delay = 5
+# conf
+const delay: float = 5.0 # seconds
+const separator: bool = false
+
 var lastTime: float = 0.0
 var lastTemp: float = 0.0
 var lastSpeed: float = 0
@@ -33,9 +36,9 @@ proc runJson(): bool =
   if speed <= 2:
       speedcolor = "#959595"
   echo ","
-  echo %*[{"full_text": fmt"{speed}GHz", "color": speedcolor},
-          {"full_text": fmt"{temp}°C", "color": tempcolor},
-          {"full_text": time, "color": timecolor}]
+  echo %*[{"full_text": fmt"⚙️{speed}GHz", "color": speedcolor, "separator": separator},
+          {"full_text": fmt"🌡️{temp}°C", "color": tempcolor, "separator": separator},
+          {"full_text": time, "color": timecolor, "separator": separator}]
 
 proc runTty(): bool =
   # TODO clean up delay handling
